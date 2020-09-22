@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="view_picking_form_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form_inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="location_dest_id" position="after">
+                    <field name="code" invisible="1"/>
+                    <field name="aux_location_dest_id" attrs="{'invisible': [('code', '!=', 'internal')]}" options="{'no_create': True, 'no_open': True}"/>
+                </field>
+                <!--
+                <xpath expr="//page[@name='extra']/group/group/field[@name='picking_type_code']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                </xpath>
+                -->
+            
+                <field name="location_dest_id" position="attributes">
+                    <attribute name="attrs">{'invisible': [('code', '=', 'internal')]}</attribute>
+                </field> 
+            
+                <field name="location_id" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                </field>
+        
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                </xpath>
+
+                <button name="action_confirm" position="after">
+                    <field name="can_validate" invisible="1"/>
+                    <field name="show_validate" invisible="1"/>
+                    <button name="transfer" string="Transferir" type="object" class="oe_highlight" groups="base.group_user" attrs="{'invisible': ['|', '&amp;',('aux_location_dest_id','!=', False),('can_validate','!=',False),('state','!=','draft')]}"/>
+                </button>                
+                <button name="button_validate" position="replace">
+                    <button name="button_validate" string="Validar" attrs="{'invisible': ['|','&amp;', ('can_validate','=',False), ('state','!=', 'draft'),('show_validate', '=', False)]}" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
+                </button>
+
+            </field>
+        </record>
+    </data>
+</odoo>
